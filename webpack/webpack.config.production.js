@@ -2,6 +2,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const method = require('./webpack.method')
 
 const extractCSS = new ExtractTextPlugin('css/[name].css');       // 将css从js分离出来
 
@@ -10,7 +11,7 @@ module.exports = {
   context: path.resolve(__dirname, '../src'),
   entry: {
     index: './index.js',
-    about: './js/about.js'
+    ...method.entryList
   },
   resolve: {
     extensions: ['.js', '.less', '.css', '.jpg', '.png', '.svg', '.woff2', '.gif']
@@ -18,7 +19,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',
-    filename: '[name].[hash:5].js'
+    filename: 'js/[name].[hash:5].js'
   },
   module: {
     rules: [{
@@ -64,17 +65,7 @@ module.exports = {
       }
     }),
 
-    new HtmlWebpackPlugin({
-      title: 'about',
-      // favicon: path.resolve(__dirname,'favicon.ico'), // 生成的 html 文件设置 favicon
-      filename: path.resolve(__dirname, '../dist/pages/about.html'),
-      template: "./pages/about.html",
-      chunks: ['about'],
-      inlineSource: '.(js|css)$',
-      minify: {
-        collapseWhitespace: true                   // 去除所有空格
-      }
-    }),
+    ...method.pluginList,
 
     //设置每一次build之前先删除dist
     new CleanWebpackPlugin(

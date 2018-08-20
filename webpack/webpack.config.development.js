@@ -1,21 +1,23 @@
 const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const port = 7000;
+const port = 7000;                 // webpack-dev-server 端口号
+const method = require('./webpack.method')
 
 module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, '../src'),
   entry: {
-    index: './index.js'
+    index: './index.js',
+    ...method.entryList
   },
   resolve: {
     extensions: ['.js', '.less', '.css', '.jpg', '.png', '.svg', '.woff2', '.gif']
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
-    publicPath: '',
-    filename: '[name]-[hash:5].js'
+    publicPath: '/',
+    filename: 'js/[name]-[hash:5].js'
   },
   module: {
     rules: [{
@@ -58,11 +60,13 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: '../dist/index.html',
-      inject: 'head',
       template: "index.html",
       chunks: ['index'],
       inlineSource: '.(js|css)$'
     }),
+
+    ...method.pluginList,
+    
     // 开启webpack全局热更新
     new webpack.HotModuleReplacementPlugin(),
 
@@ -71,7 +75,6 @@ module.exports = {
   ],
   devServer: {
     port,
-    contentBase: path.resolve(__dirname, '../dist'),
     host: '0.0.0.0',
     disableHostCheck: true,
     proxy: {
