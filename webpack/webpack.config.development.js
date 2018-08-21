@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const autoprefixer = require('autoprefixer')
 const port = 7000;                 // webpack-dev-server 端口号
 const method = require('./webpack.method')
 
@@ -38,7 +39,13 @@ module.exports = {
       }, {
         loader: 'less-loader',
         options: {
-          sourceMap: true
+          sourceMap: true,
+          javascriptEnabled: true          // 开启后sprite.less才能使用javascript代码
+        }
+      }, {
+        loader: 'postcss-loader',
+        options: {
+          plugins: [autoprefixer({ browsers: ["iOS >= 8", "Firefox >= 20", "Android > 4.4"] })]
         }
       }]
     }, {

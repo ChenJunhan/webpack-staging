@@ -1,10 +1,13 @@
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const autoprefixer = require('autoprefixer')
+const HtmlWebpackPlugin = require('html-webpack-plugin')          // 生成html
+const CleanWebpackPlugin = require('clean-webpack-plugin')        // 每次build清除dist文件夹
+const ExtractTextPlugin = require('extract-text-webpack-plugin')  // 将css从js分离出来
+const SpritesmithPlugin = require('webpack-spritesmith')          // 合成雪碧图插件
+const ImageminPlugin = require('imagemin-webpack-plugin').default // 压缩图片
 const method = require('./webpack.method')
 
-const extractCSS = new ExtractTextPlugin('css/[name].css');       // 将css从js分离出来
+const extractCSS = new ExtractTextPlugin('css/[name].css');       
 
 module.exports = {
   mode: 'production',
@@ -32,7 +35,19 @@ module.exports = {
       test: /\.(less|css)$/,
       use: extractCSS.extract({
         fallback: 'style-loader',
-        use: ['css-loader', 'less-loader']
+        use: [{
+          loader: 'css-loader',
+        }, {
+          loader: 'less-loader',
+          options: {
+            javascriptEnabled: true          // 开启后sprite.less才能使用javascript代码
+          }
+        }, {
+          loader: 'postcss-loader',
+          options: {
+            plugins: [autoprefixer({ browsers: ["iOS >= 8", "Firefox >= 20", "Android > 4.4"] })]
+          }
+        }]
       })
     }, {
       test: /\.(jpg|jpeg|png|svg|gif|woff2)$/,
@@ -40,7 +55,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: 'assets/[hash].[ext]'
+          name: 'assets/[hash].[ext]',
         }
       }]
     }, {
@@ -67,7 +82,7 @@ module.exports = {
 
     ...method.pluginList,
 
-    //设置每一次build之前先删除dist
+    // 设置每一次build之前先删除dist
     new CleanWebpackPlugin(
       ['dist/*'],　                                 //匹配删除的文件
       {
@@ -75,6 +90,35 @@ module.exports = {
           verbose: true,        　　　　　　　　　　  //开启在控制台输出信息
           dry: false        　　　　　　　　　　      //启用删除文件
       }
-   )
+    ),
+
+    // 合成雪碧图
+    new SpritesmithPlugin({
+      src: {
+        cwd: path.resolve(__dirname, '../src/imgs/icons'),
+        glob: '*.png'
+      },
+      target: {
+        image: path.resolve(__dirname, '../src/imgs/sprite.png'),
+        css: path.resolve(__dirname, '../src/less/sprite.less')
+      },
+      //设置sprite.png的引用格式
+      apiOptions: {
+        cssImageRef: '../imgs/sprite.png'  //cssImageRef为必选项
+      },
+      //配置spritesmith选项，非必选
+      spritesmithOptions: {
+        algorithm: 'binary-tree',    //设置图标的排列方式
+        padding: 20
+      }
+    }),
+
+    // 压缩图片
+    // new ImageminPlugin({
+    //   pngquant: {
+    //     quality: '20-80'
+    //   }
+    // })
+
   ]
 }
