@@ -6,6 +6,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')  // 将css从js
 const SpritesmithPlugin = require('webpack-spritesmith')          // 合成雪碧图插件
 const ImageminPlugin = require('imagemin-webpack-plugin').default // 压缩图片
 const method = require('./webpack.method')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const extractCSS = new ExtractTextPlugin('css/[name].css');       
 
@@ -14,15 +15,38 @@ module.exports = {
   context: path.resolve(__dirname, '../src'),
   entry: {
     index: './index.js',
-    ...method.entryList
+    ...method.entryList,
+    vendors: [ 'jquery' ]        // 将框架文件单独打包成一个文件
   },
-  resolve: {
-    extensions: ['.js', '.less', '.css', '.jpg', '.png', '.svg', '.woff2', '.gif']
+  optimization: {
+    splitChunks: {               // 将框架文件单独打包成一个文件
+      cacheGroups: {
+        vendor: {
+          chunks: "initial",
+          test: "vendors",
+          name: "vendors",
+          enforce: true
+        }
+      }
+    },
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          output: {
+            comments: false
+          },
+          compress: {
+            drop_console: true,          // 移除console.log
+            drop_debugger: true          // 删除debugger语句
+          }
+        }
+      }),
+    ]
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',
-    filename: 'js/[name].[hash:5].js'
+    filename: 'js/[name].[chunkhash].js'
   },
   module: {
     rules: [{
@@ -73,7 +97,7 @@ module.exports = {
       // favicon: path.resolve(__dirname,'favicon.ico'), // 生成的 html 文件设置 favicon
       filename: path.resolve(__dirname, '../dist/index.html'), 
       template: "index.html",
-      chunks: ['index'],
+      chunks: ['vendors','index'],
       inlineSource: '.(js|css)$',
       minify: {
         collapseWhitespace: true                   // 去除所有空格
@@ -119,6 +143,6 @@ module.exports = {
     //     quality: '20-80'
     //   }
     // })
-
+    
   ]
 }

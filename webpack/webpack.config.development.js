@@ -13,12 +13,15 @@ module.exports = {
     ...method.entryList
   },
   resolve: {
-    extensions: ['.js', '.less', '.css', '.jpg', '.png', '.svg', '.woff2', '.gif']
+    extensions: ['.js', '.less', '.css', '.jpg', '.png', '.svg', '.woff2', '.gif'],
+    alias: {
+      jquery: 'jquery/dist/jquery.min.js'
+    }
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',
-    filename: 'js/[name]-[hash:5].js'
+    filename: 'js/[name]-[chunkhash].js'
   },
   module: {
     rules: [{

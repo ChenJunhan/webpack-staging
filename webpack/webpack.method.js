@@ -27,7 +27,7 @@ function readFileList(paths, htmlList, entryList) {
       new HtmlWebpackPlugin({
         filename: path.resolve(__dirname, '../dist/pages/' + html),
         template: "./pages/" + f + "/" + html,
-        chunks: [f],
+        chunks: ['vendors', f],
         inlineSource: '.(js|css)$',
         minify: {
           collapseWhitespace: true                  
