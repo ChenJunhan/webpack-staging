@@ -45,7 +45,7 @@ module.exports = {
       }, {
         loader: 'postcss-loader',
         options: {
-          plugins: [autoprefixer({ browsers: ["iOS >= 8", "Firefox >= 20", "Android > 4.4"] })]
+          plugins: [autoprefixer({ browsers: ["iOS >= 8", "Firefox >= 20", "Android > 4.0", "ie > 9"] })]       // 兼容ie9， ios8
         }
       }]
     }, {

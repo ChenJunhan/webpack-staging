@@ -1,3 +1,7 @@
+<div style="text-align: center">
+<img src="src/imgs/icons/logo.png"/>
+</div>
+
 # webpack-staging
 这是一个基于webpack的多页面脚手架
 
