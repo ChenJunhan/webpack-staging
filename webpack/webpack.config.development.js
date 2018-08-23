@@ -21,7 +21,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',
-    filename: 'js/[name]-[chunkhash].js'
+    filename: 'js/[name].[hash].js'
   },
   module: {
     rules: [{
