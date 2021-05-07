@@ -59,7 +59,7 @@ module.exports = {
       test: /\.(less|css)$/,
       use: extractCSS.extract({
         fallback: 'style-loader',
-        // publicPath: '/index/image/',          // 为生成的css里面的url添加前缀
+        // publicPath: '/',          // 为生成的css里面的url添加前缀
         use: [{
           loader: 'css-loader',
         }, {
@@ -70,7 +70,7 @@ module.exports = {
         }, {
           loader: 'postcss-loader',
           options: {
-            plugins: [autoprefixer({ browsers: ["iOS >= 8", "Firefox >= 20", "Android > 4.0", "ie > 9"] })]
+            plugins: [require('autoprefixer')()]
           }
         }]
       })
